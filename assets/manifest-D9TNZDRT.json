@@ -1,0 +1,22 @@
+{
+  "short_name": "YSK SALES",
+  "name": "YSK SALES | لإدارة المبيعات",
+  "id": ".",
+  "icons": [
+    {
+      "src": "../YSK-SALES.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "../YSK-SALES.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "../",
+  "scope": "../",
+  "display": "standalone",
+  "theme_color": "#1f2937",
+  "background_color": "#f3f4f6"
+}

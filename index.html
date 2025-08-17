@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YSK SALES | لإدارة المبيعات</title>
+
+    <!-- Favicon and PWA manifest -->
+    <link rel="icon" type="image/png" href="YSK-SALES.png" />
+    <link rel="manifest" href="./assets/manifest-D9TNZDRT.json" />
+
+    <!-- Google Fonts (will be cached by Service Worker) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CDN (will be cached by Service Worker) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Optional libs -->
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+
+    <style>
+      body { font-family: 'Cairo', sans-serif; }
+      .sidebar-icon { transition: all 0.2s ease-in-out; }
+      .sidebar-icon:hover { transform: scale(1.1); }
+      .modal-bg { background-color: rgba(0,0,0,0.5); }
+      @media print { body * { visibility: hidden; } #print-area, #print-area * { visibility: visible; } #print-area { position: absolute; left: 0; top: 0; width: 100%; } }
+      #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+      #splash-screen img { width: 150px; height: 150px; }
+      #splash-screen .spinner { margin-top: 20px; border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #09f; animation: spin 1s ease infinite; }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+
+    <!-- Import maps -->
+
+    <script type="importmap">
+    {
+      "imports": {
+        "react-dom/": "https://esm.sh/react-dom@^19.1.1/",
+        "react/": "https://esm.sh/react@^19.1.1/",
+        "react": "https://esm.sh/react@^19.1.1",
+        "recharts": "https://esm.sh/recharts@^3.1.2"
+      }
+    }
+    </script>
+    <script type="module" crossorigin src="./assets/index-D44y0csU.js"></script>
+  </head>
+  <body>
+    <div id="splash-screen">
+      <img src="YSK-SALES.png" alt="YSK SALES Logo">
+      <div class="spinner"></div>
+    </div>
+    <div id="root"></div>
+    <!-- App Entry Point -->
+  </body>
+</html>

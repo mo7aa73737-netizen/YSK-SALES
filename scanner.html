@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ماسح الباركود</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background:#111; color:#fff; display:flex; align-items:center; justify-content:center; flex-direction:column; height:100vh; margin:0 }
+        #reader { width:100%; max-width:400px; border-radius:16px; overflow:hidden; box-shadow:0 0 20px rgba(0,0,0,0.6); display:none }
+        .status-container { padding:20px; display:flex; flex-direction:column; align-items:center; gap:10px }
+        .status-icon { font-size:3em; margin-bottom:10px }
+        .status-message { font-size:1.2em; font-weight:600 }
+        .status-scanning .status-icon { color:#4CAF50; animation:pulse 1.5s infinite }
+        .status-success .status-icon { color:#00e676 }
+        .status-error .status-icon { color:#ff5252 }
+        @keyframes pulse {0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+    </style>
+</head>
+<body>
+    <div id="reader"></div>
+    <div class="status-container status-ready" id="statusContainer">
+        <i id="statusIcon" class="status-icon fa-solid fa-hourglass-half"></i>
+        <p id="statusMessage">في انتظار طلب مسح من النظام...</p>
+    </div>
+
+    <script>
+        const readerDiv = document.getElementById("reader");
+        const statusContainer = document.getElementById("statusContainer");
+        const statusIcon = document.getElementById("statusIcon");
+        const statusMessage = document.getElementById("statusMessage");
+
+        function updateUI(status, message, icon) {
+            statusContainer.className = `status-container status-${status}`;
+            statusIcon.className = `status-icon ${icon}`;
+            statusMessage.textContent = message;
+        }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBYMY7tpVUYuLmnmBr0RgB-GJ0Vbnx9Ofg",
+            authDomain: "scaner-8bf66.firebaseapp.com",
+            projectId: "scaner-8bf66",
+            storageBucket: "scaner-8bf66.firebasestorage.app",
+            messagingSenderId: "271990306832",
+            appId: "1:271990306832:web:c4bddc20a13be91adf3295",
+            measurementId: "G-YF7GBJ57JS"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const scannerSessionDocRef = db.collection('scannerSessions').doc('fixed');
+
+        let html5QrCode;
+
+        function onScanSuccess(decodedText) {
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then(() => {
+                    readerDiv.style.display = 'none';
+                    statusContainer.style.display = 'flex';
+                    updateUI('success', `تم المسح بنجاح!`, 'fa-solid fa-circle-check');
+                    scannerSessionDocRef.update({ status: 'scanned', scannedValue: decodedText, scannedAt: new Date() });
+                }).catch(err => console.error("Failed to stop scanner", err));
+            }
+        }
+
+        async function startScanner() {
+            statusContainer.style.display = 'none';
+            readerDiv.style.display = 'block';
+            if (!html5QrCode) {
+                html5QrCode = new Html5Qrcode("reader");
+            }
+            try {
+                await html5QrCode.start(
+                    { facingMode: "environment" },
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    onScanSuccess,
+                    () => {}
+                );
+            } catch (err) {
+                updateUI('error', 'لا يمكن تشغيل الكاميرا', 'fa-solid fa-video-slash');
+            }
+        }
+
+        scannerSessionDocRef.onSnapshot((snapshot) => {
+            const data = snapshot.data();
+            if (!data) {
+                updateUI('ready', 'في انتظار طلب مسح من النظام...', 'fa-solid fa-hourglass-half');
+                return;
+            }
+
+            console.log("Scanner session data:", data);
+
+            if (data.status === 'scanRequested') {
+                console.log("Scan requested, starting scanner...");
+                updateUI('scanning', 'وجه الكاميرا للباركود...', 'fa-solid fa-qrcode');
+                startScanner();
+            } else if (data.status === 'completed') {
+                console.log("Scan completed, stopping scanner...");
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop().catch(err => console.error("Failed to stop scanner:", err));
+                }
+                readerDiv.style.display = 'none';
+                statusContainer.style.display = 'flex';
+                updateUI('ready', 'في انتظار طلب مسح من النظام...', 'fa-solid fa-hourglass-half');
+            } else {
+                // For any other status, ensure we're in ready state
+                if (html5QrCode && html5QrCode.isScanning) {
+                    html5QrCode.stop().catch(err => console.error("Failed to stop scanner:", err));
+                }
+                readerDiv.style.display = 'none';
+                statusContainer.style.display = 'flex';
+                updateUI('ready', 'في انتظار طلب مسح من النظام...', 'fa-solid fa-hourglass-half');
+            }
+        }, (error) => {
+            console.error("Firestore listener error:", error);
+            updateUI('error', 'فشل الاتصال بالنظام', 'fa-solid fa-wifi-slash');
+        });
+    </script>
+</body>
+</html>

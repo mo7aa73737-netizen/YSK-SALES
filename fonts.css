@@ -1,0 +1,35 @@
+/* Cairo Regular */
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(./fonts/cairo-v28-latin_arabic-regular.woff2) format('woff2');
+}
+
+/* Cairo 500 */
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(./fonts/cairo-v28-latin_arabic-500.woff2) format('woff2');
+}
+
+/* Cairo 600 */
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(./fonts/cairo-v28-latin_arabic-600.woff2) format('woff2');
+}
+
+/* Cairo 700 */
+@font-face {
+  font-family: 'Cairo';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(./fonts/cairo-v28-latin_arabic-700.woff2) format('woff2');
+}
